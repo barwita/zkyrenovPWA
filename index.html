@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a3d8f">
+<meta name="mobile-web-app-capable" content="true">
+<meta name="apple-mobile-web-app-capable" content="true">
+<meta name="apple-mobile-web-app-title" content="ZKY RENOV">
+<link rel="manifest" href="manifest.json">
+<title>ZKY RENOV</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--p:#1a3d8f;--a:#e86010;--g:#6b6b6b;--l:#f2f3f7;--s:#1e7a3c;--r:10px}
+body{background:var(--l);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+.hdr{background:var(--p);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.hdr h1{font-size:20px;font-weight:700}.hdr span{font-size:11px;opacity:.75}
+.form{padding:14px 12px 80px;max-width:600px;margin:0 auto}
+.st{font-size:12px;font-weight:700;color:var(--p);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px}
+.card{background:#fff;border-radius:var(--r);padding:12px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.rr{display:flex;gap:8px}
+.rb{flex:1;padding:10px;border:2px solid #ddd;border-radius:8px;text-align:center;font-weight:600;font-size:14px;cursor:pointer;color:#555;background:#fff;user-select:none;transition:all .2s}
+.rb.on{border-color:var(--p);background:var(--p);color:#fff}
+.r2{display:flex;gap:8px}.r2>*{flex:1}
+input,textarea{width:100%;padding:10px 12px;border:1.5px solid #dde;border-radius:8px;font-size:14px;outline:none;background:#fff;color:#222;transition:border .2s;font-family:inherit}
+input:focus,textarea:focus{border-color:var(--p)}
+.fl{font-size:11px;color:var(--g);margin-bottom:4px;font-weight:600}
+.tr{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}
+textarea.ti{flex:1;height:58px;resize:none;font-size:13px}
+.pi{width:90px;flex-shrink:0;text-align:right}
+.tb{background:#fff;border-radius:var(--r);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-top:4px}
+.tb span{font-size:13px;font-weight:700;color:var(--p)}.tb strong{font-size:22px;font-weight:800;color:var(--s)}
+.bs{width:100%;padding:15px;background:var(--a);color:#fff;border:none;border-radius:var(--r);font-size:16px;font-weight:700;cursor:pointer;margin-top:14px}
+.bs:active{opacity:.8}
+.br{width:100%;padding:12px;background:#aaa;color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;margin-top:8px}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;justify-content:center;align-items:center}
+.ov.show{display:flex}
+.mo{background:#fff;border-radius:16px;padding:28px 24px;width:88%;max-width:360px;text-align:center}
+.mo h2{font-size:20px;margin-bottom:10px}.mo p{font-size:14px;color:#555;line-height:1.5;white-space:pre-wrap}
+.mo .ic{font-size:52px;margin-bottom:12px}
+.mo .ok{margin-top:20px;width:100%;padding:13px;background:var(--p);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+.sp{width:44px;height:44px;border:4px solid #eee;border-top-color:var(--p);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="hdr"><h1>ZKY RENOV</h1><span>Factures &amp; Devis</span></div>
+<div class="form">
+  <div class="st">&#128196; Type de document</div>
+  <div class="card"><div class="rr">
+    <div class="rb on" id="bf" onclick="setType('FACTURE')">&#129534; FACTURE</div>
+    <div class="rb" id="bd" onclick="setType('DEVIS')">&#128203; DEVIS</div>
+  </div></div>
+
+  <div class="st">&#128290; Num&#233;ro &amp; Date</div>
+  <div class="card"><div class="r2">
+    <div><div class="fl">Num&#233;ro</div><input id="fn" type="text" placeholder="Ex: 2026-001"></div>
+    <div><div class="fl">Date</div><input id="fd" type="text" placeholder="JJ/MM/AAAA"></div>
+  </div></div>
+
+  <div class="st">&#128100; Client</div>
+  <div class="card">
+    <div class="fl">Nom &amp; adresse client</div>
+    <input id="fc" type="text" placeholder="Nom Pr&#233;nom ou Soci&#233;t&#233;" style="margin-bottom:10px">
+    <div class="fl">Adresse du chantier</div>
+    <input id="fch" type="text" placeholder="Ex: 12 rue des Lilas, 59000 Lille">
+  </div>
+
+  <div class="st">&#128295; Travaux &amp; Prix</div>
+  <div class="card">
+    <div style="display:flex;gap:8px;margin-bottom:6px">
+      <div class="fl" style="flex:1">Description</div>
+      <div class="fl" style="width:90px;text-align:right">Prix (&#8364;)</div>
+    </div>
+    <div id="tc"></div>
+  </div>
+
+  <div class="tb"><span>TOTAL TTC</span><strong id="tot">0,00 &#8364;</strong></div>
+  <button class="bs" onclick="go()">&#9993; G&#233;n&#233;rer &amp; Envoyer le PDF</button>
+  <button class="br" onclick="raz()">&#128260; R&#233;initialiser</button>
+</div>
+
+<div class="ov" id="ol"><div class="mo"><div class="sp"></div><h2>G&#233;n&#233;ration...</h2><p>Cr&#233;ation du PDF et envoi email</p></div></div>
+<div class="ov" id="os"><div class="mo"><div class="ic">&#9989;</div><h2>Envoy&#233; !</h2><p id="sm"></p><button class="ok" onclick="cs()">Nouveau document</button></div></div>
+<div class="ov" id="oe"><div class="mo"><div class="ic">&#10060;</div><h2>Erreur</h2><p id="em"></p><button class="ok" onclick="document.getElementById('oe').classList.remove('show')" style="background:#e53">Fermer</button></div></div>
+
+<script>
+// ============================================================
+// CONFIGURATION — À ADAPTER
+// ============================================================
+// URL de votre backend Node.js (Render, Railway, VPS…)
+// En développement local : 'http://localhost:3000'
+// En production : 'https://votre-app.onrender.com'
+const API_URL = 'https://zky-renov-backend.onrender.com';
+
+// Logo en base64 (optionnel — laisser vide '' si aucun logo)
+const LOGO = ''; // Collez ici votre base64 du logo si vous le souhaitez
+// ============================================================
+
+let dtype = 'FACTURE';
+
+function setType(t) {
+  dtype = t;
+  document.getElementById('bf').classList.toggle('on', t === 'FACTURE');
+  document.getElementById('bd').classList.toggle('on', t === 'DEVIS');
+}
+
+window.onload = () => {
+  const d = new Date();
+  document.getElementById('fd').value =
+    String(d.getDate()).padStart(2, '0') + '/' +
+    String(d.getMonth() + 1).padStart(2, '0') + '/' +
+    d.getFullYear();
+  const c = document.getElementById('tc');
+  c.innerHTML = '';
+  for (let i = 1; i <= 9; i++) {
+    c.innerHTML += `<div class="tr">
+      <textarea class="ti" id="t${i}" placeholder="T&#226;che ${i}" oninput="upd()"></textarea>
+      <input class="pi" id="p${i}" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0" oninput="upd()">
+    </div>`;
+  }
+};
+
+function tot() {
+  let s = 0;
+  for (let i = 1; i <= 9; i++) s += parseFloat(document.getElementById('p' + i).value) || 0;
+  return s;
+}
+
+function upd() {
+  document.getElementById('tot').textContent =
+    tot().toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + ' \u20ac';
+}
+
+function mkpdf() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+  const num = document.getElementById('fn').value.trim();
+  const date = document.getElementById('fd').value.trim();
+  const cli = document.getElementById('fc').value.trim();
+  const chan = document.getElementById('fch').value.trim();
+  const T = tot(), W = 186, mL = 12, dW = W * .72, mW = W * .28, rH = 7;
+
+  // Logo
+  if (LOGO) {
+    try { doc.addImage('data:image/png;base64,' + LOGO, 'PNG', mL, 10, 62, 36); } catch (e) {}
+  }
+
+  // En-tête
+  doc.setFontSize(26); doc.setFont('helvetica', 'bold');
+  doc.text(dtype, mL + W, 20, { align: 'right' });
+  doc.setFontSize(9);
+  doc.text('N\u00b0 ' + num, mL + 65, 27);
+  doc.text('DATE : ' + date, mL + 65 + (W - 65) / 2, 27);
+  doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(100);
+  doc.text('IBAN : FR7630004010290000051756623', mL + 65, 33);
+  doc.text('BIC : BNPAFRPPXXX', mL + 65, 38);
+  doc.setTextColor(0);
+
+  // Tableau client / chantier
+  let y = 52;
+  const hw = W / 2;
+  doc.setDrawColor(180); doc.setLineWidth(0.3);
+  doc.rect(mL, y, hw, 16); doc.rect(mL + hw, y, hw, 16);
+  doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+  doc.text('A :', mL + 3, y + 5.5);
+  doc.setFont('helvetica', 'normal');
+  doc.text(cli, mL + 3, y + 11, { maxWidth: hw - 5 });
+  doc.setFont('helvetica', 'bold');
+  doc.text('DESCRIPTION :', mL + hw + 3, y + 5.5);
+  doc.setFont('helvetica', 'normal');
+  doc.text(chan, mL + hw + 3, y + 11, { maxWidth: hw - 5 });
+  y += 20;
+
+  // Lignes travaux
+  doc.setFillColor(240, 240, 240); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+  doc.rect(mL, y, dW, rH, 'FD'); doc.rect(mL + dW, y, mW, rH, 'FD');
+  doc.text('DESCRIPTION', mL + dW / 2, y + 4.8, { align: 'center' });
+  doc.text('MONTANT', mL + dW + mW / 2, y + 4.8, { align: 'center' });
+  y += rH;
+
+  doc.setFont('helvetica', 'normal'); doc.setFillColor(255, 255, 255);
+  let nf = 0;
+  for (let i = 1; i <= 9; i++) {
+    const ta = document.getElementById('t' + i).value.trim();
+    const pr = parseFloat(document.getElementById('p' + i).value) || 0;
+    if (!ta && pr === 0) continue;
+    nf++;
+    doc.setDrawColor(180);
+    doc.rect(mL, y, dW, rH); doc.rect(mL + dW, y, mW, rH);
+    doc.text('  ' + ta, mL + 2, y + 4.8, { maxWidth: dW - 4 });
+    if (pr > 0) doc.text(pr.toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + ' \u20ac', mL + dW + mW - 2, y + 4.8, { align: 'right' });
+    y += rH;
+  }
+
+  // Lignes vides restantes
+  const ne = 9 - nf;
+  if (ne > 0) {
+    doc.setDrawColor(200);
+    doc.rect(mL, y, dW, ne * rH);
+    doc.rect(mL + dW, y, mW, ne * rH);
+    y += ne * rH;
+  }
+
+  // Total
+  doc.setFillColor(240, 240, 240); doc.setFont('helvetica', 'bold');
+  doc.setDrawColor(0); doc.setLineWidth(0.5);
+  doc.rect(mL, y, dW, rH, 'FD'); doc.rect(mL + dW, y, mW, rH, 'FD');
+  doc.setLineWidth(0.3);
+  doc.text('  TOTAL TTC', mL + 2, y + 4.8);
+  doc.text(T.toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + ' \u20ac', mL + dW + mW - 2, y + 4.8, { align: 'right' });
+  y += rH + 6;
+
+  // Pied de page
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(100);
+  doc.text("Veuillez libeller tous les ch\u00e8ques \u00e0 l'ordre de ZKY RENOV \u2014 R\u00e8glement imm\u00e9diat par ch\u00e8que ou virement", mL + W / 2, y, { align: 'center' });
+  y += 4; doc.setDrawColor(180); doc.line(mL, y, mL + W, y); y += 5;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(0);
+  doc.text('Nous vous remercions de votre confiance.', mL + W / 2, y, { align: 'center' });
+
+  return doc;
+}
+
+async function go() {
+  const num = document.getElementById('fn').value.trim();
+  const cli = document.getElementById('fc').value.trim();
+  if (!num) { err('Le num\u00e9ro est obligatoire.'); return; }
+  if (!cli) { err('Le nom du client est obligatoire.'); return; }
+
+  document.getElementById('ol').classList.add('show');
+
+  try {
+    const doc = mkpdf();
+    const fn = dtype + '_' + num + '.pdf';
+    const suj = dtype + ' N\u00b0' + num + ' - ' + cli;
+
+    // 1. Téléchargement local automatique
+    const blob = doc.output('blob');
+    const u = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = u; a.download = fn; a.click();
+    URL.revokeObjectURL(u);
+
+    // 2. Envoi via le backend Node.js (Nodemailer)
+    // Le PDF est envoyé en base64 via l'API REST
+    const b64 = doc.output('datauristring'); // data:application/pdf;base64,XXXX
+
+    const response = await fetch(API_URL + '/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        subject: suj,
+        message: 'Bonjour,\n\nVeuillez trouver ci-joint : ' + suj + '\n\nCordialement,\nZKY RENOV',
+        pdfBase64: b64,
+        filename: fn
+      })
+    });
+
+    const result = await response.json();
+
+    document.getElementById('ol').classList.remove('show');
+
+    if (result.success) {
+      document.getElementById('sm').textContent = suj + '\n\nPDF téléchargé + envoyé avec succès.';
+      document.getElementById('os').classList.add('show');
+    } else {
+      throw new Error(result.error || 'Erreur inconnue du serveur');
+    }
+
+  } catch (e) {
+    document.getElementById('ol').classList.remove('show');
+    err('PDF téléchargé.\nErreur email : ' + (e.message || JSON.stringify(e)));
+  }
+}
+
+function err(m) {
+  document.getElementById('em').textContent = m;
+  document.getElementById('oe').classList.add('show');
+}
+
+function cs() {
+  document.getElementById('os').classList.remove('show');
+  raz();
+}
+
+function raz() {
+  setType('FACTURE');
+  ['fn', 'fc', 'fch'].forEach(id => document.getElementById(id).value = '');
+  const d = new Date();
+  document.getElementById('fd').value =
+    String(d.getDate()).padStart(2, '0') + '/' +
+    String(d.getMonth() + 1).padStart(2, '0') + '/' +
+    d.getFullYear();
+  for (let i = 1; i <= 9; i++) {
+    document.getElementById('t' + i).value = '';
+    document.getElementById('p' + i).value = '';
+  }
+  upd();
+}
+</script>
+</body>
+</html>
