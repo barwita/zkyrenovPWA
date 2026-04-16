@@ -33,7 +33,8 @@ const EMAIL_CONFIG = {
 };
 
 // Adresse qui REÇOIT les emails (peut être la même que EMAIL_USER)
-const DEST_EMAIL = process.env.DEST_EMAIL || 'votre.email@gmail.com';
+const DEST_EMAIL = process.env.DEST_EMAIL;
+if (!DEST_EMAIL) throw new Error('DEST_EMAIL non configuré');
 
 // ============================================================
 // Middleware
@@ -60,7 +61,7 @@ app.post('/send-email', async (req, res) => {
   const base64Data = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
 
   // Création du transporteur Nodemailer
-const transporter = createTransport(EMAIL_CONFIG);
+  const transporter = createTransport(EMAIL_CONFIG);
 
   const mailOptions = {
     from: `"ZKY RENOV" <${EMAIL_CONFIG.auth.user}>`,
