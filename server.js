@@ -4,7 +4,7 @@
 // ============================================================
 
 const express = require('express');
-const nodemailer = require('nodemailer');
+const { createTransport } = require('nodemailer');
 const cors = require('cors');
 
 const app = express();
@@ -60,7 +60,7 @@ app.post('/send-email', async (req, res) => {
   const base64Data = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
 
   // Création du transporteur Nodemailer
-  const transporter = nodemailer.createTransporter(EMAIL_CONFIG);
+const transporter = createTransport(EMAIL_CONFIG);
 
   const mailOptions = {
     from: `"ZKY RENOV" <${EMAIL_CONFIG.auth.user}>`,
