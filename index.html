@@ -226,7 +226,7 @@ function mkpdf() {
 async function go() {
   const num = document.getElementById('fn').value.trim();
   const cli = document.getElementById('fc').value.trim();
-  if (!num) { err('Le num\u00e9ro est obligatoire.'); return; }
+  if (!num) { err('Le numéro est obligatoire.'); return; }
   if (!cli) { err('Le nom du client est obligatoire.'); return; }
 
   document.getElementById('ol').classList.add('show');
@@ -234,32 +234,28 @@ async function go() {
   try {
     const doc = mkpdf();
     const fn = dtype + '_' + num + '.pdf';
-    const suj = dtype + ' N\u00b0' + num + ' - ' + cli;
+    const suj = dtype + ' N°' + num + ' - ' + cli;
 
-    // 1. Téléchargement local automatique
+    // 1. Téléchargement local
     const blob = doc.output('blob');
     const u = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = u; a.download = fn; a.click();
     URL.revokeObjectURL(u);
 
-    // 2. Envoi via le backend Node.js (Nodemailer)
-    // Le PDF est envoyé en base64 via l'API REST
-    const b64 = doc.output('datauristring'); // data:application/pdf;base64,XXXX
+    // 2. Envoi via FormData (plus fiable que base64 JSON)
+    const formData = new FormData();
+    formData.append('pdf', blob, fn);
+    formData.append('subject', suj);
+    formData.append('message', 'Bonjour,\n\nVeuillez trouver ci-joint : ' + suj + '\n\nCordialement,\nZKY RENOV');
+    formData.append('filename', fn);
 
     const response = await fetch(API_URL + '/send-email', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        subject: suj,
-        message: 'Bonjour,\n\nVeuillez trouver ci-joint : ' + suj + '\n\nCordialement,\nZKY RENOV',
-        pdfBase64: b64,
-        filename: fn
-      })
+      body: formData  // pas de Content-Type header, le navigateur le gère
     });
 
     const result = await response.json();
-
     document.getElementById('ol').classList.remove('show');
 
     if (result.success) {
